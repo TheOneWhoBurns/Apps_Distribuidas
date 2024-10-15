@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Group Chat</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body>
+    <h3>Live Group Chat</h3>
+    <h:form prependId="false">
+        <div id="wrapper">
+            <div id="menu">
+                <p class="welcome">Welcome, <b>#{chatAppBean.name}</b></p>
+                <p class="logout">
+                    <h:commandLink id="end" value="Exit Chat" action="#{chatAppBean.endSession}"/>
+                </p>
+                <div style="clear:both"></div>
+            </div>
+
+            <div id="group-controls">
+                <h:selectOneMenu value="#{chatAppBean.currentGroup}">
+                    <f:selectItems value="#{chatAppBean.groupNames}" />
+                    <f:ajax event="change" render="msgTable groupName" listener="#{chatAppBean.setCurrentGroup(chatAppBean.currentGroup)}" />
+                </h:selectOneMenu>
+
+                <h:inputText id="newGroupName" value="#{chatAppBean.newGroupName}" />
+                <h:commandButton value="Create Group" action="#{chatAppBean.createGroup}">
+                    <f:ajax execute="newGroupName" render="@form" />
+                </h:commandButton>
+            </div>
+
+            <div id="chatbox">
+                <h:outputText id="groupName" value="Current Group: #{chatAppBean.currentGroup}" />
+                <h:dataTable id="msgTable" value="#{chatAppBean.messages}" var="message" border="0">
+                    <h:column>
+                        #{message}
+                    </h:column>
+                </h:dataTable>
+            </div>
+
+            <h:inputText id="msg" value="#{chatAppBean.message}"/>
+
+            <h:commandButton id="cmd" value="Send" action="#{chatAppBean.updateTable}">
+                <f:ajax execute="msg" render="msg msgTable"/>
+            </h:commandButton>
+        </div>
+    </h:form>
+
+    <h:form>
+        <f:websocket channel="push" user="#{chatAppBean.name}">
+            <f:ajax event="updateMessages" render=":msgTable :groupName"/>
+        </f:websocket>
+    </h:form>
+</h:body>
+</html>
