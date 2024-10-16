@@ -8,6 +8,13 @@
 <h:head>
     <title>Group Chat</title>
     <h:outputStylesheet library="css" name="style.css"/>
+    <script type="text/javascript">
+        function pollForMessages(){
+            setInterval(function() {document.getElementById('updateForm:updateButton').click();
+            }, 500);
+        }
+        window.onload = pollForMessages;
+    </script>
 </h:head>
 <h:body>
     <h3>Live Group Chat</h3>
@@ -48,6 +55,12 @@
                 <f:ajax execute="msg" render="msg msgTable"/>
             </h:commandButton>
         </div>
+    </h:form>
+    
+    <h:form id="updateForm">
+        <h:commandButton id="updateButton" style="display: none;">
+            <f:ajax render="msgTable" />
+        </h:commandButton>
     </h:form>
 
     <h:form>
